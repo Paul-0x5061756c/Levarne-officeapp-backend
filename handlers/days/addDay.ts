@@ -20,7 +20,8 @@ const bodySchema = j
 				"wednesday",
 				"thursday",
 				"friday",
-				"saturday"
+				"saturday",
+        "sunday"
 			),
 		capacity: j.number().required(),
 		note: j.string().optional(),
@@ -51,17 +52,17 @@ exports.addDay = async (req: any, res: any) => {
 
     const weeksRef = db.doc('weeks/' + weekId);
 
-		const orginalVal : Week = await weeksRef.get().then((snapshot: any) => snapshot.data());
+		const originalVal : Week = await weeksRef.get().then((snapshot: any) => snapshot.data());
 
-    if(orginalVal && orginalVal.days){
-      let idx = orginalVal.days.findIndex((day : Day) => day.name === newDay.name)
+    if(originalVal && originalVal.days){
+      let idx = originalVal.days.findIndex((day : Day) => day.name === newDay.name)
       if(idx !== -1) return res.status(400).send("This day already excists for this week")
 
-      orginalVal.days.push(newDay)
+      originalVal.days.push(newDay)
 
-      await weeksRef.set(orginalVal)
+      await weeksRef.set(originalVal)
 
-      return res.status(400).send(orginalVal)
+      return res.status(400).send(originalVal)
     }
     return res.status(400).send("A week with this ID does not excist yet")
 	} catch (e: any) {
