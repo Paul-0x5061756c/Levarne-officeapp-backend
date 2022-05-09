@@ -1,3 +1,4 @@
+import { getDoc, doc, updateDoc } from "firebase/firestore/lite";
 import Day from "../../types/Day";
 
 const { db } = require("../../util/firebase");
@@ -50,11 +51,9 @@ exports.updateDay = async (req: any, res: any) => {
 			persons,
 		};
 
-		const weeksRef = db.doc("weeks/" + weekId);
-
-		const originalVal: any = await weeksRef
-			.get()
-			.then((snapshot: any) => snapshot.data());
+		const originalVal: any = await getDoc(doc(db, "weeks/" + weekId)).then(
+			(snapshot: any) => snapshot.data()
+		);
 
 		if (originalVal && originalVal.days) {
 			let idx = originalVal.days.findIndex(
@@ -63,13 +62,18 @@ exports.updateDay = async (req: any, res: any) => {
 			if (idx === -1)
 				return res.status(400).send("This day does not excist in this week");
 
-
-      // only replace given keys
-        Object.keys(newDay)
+			// only replace given keys
+			Object.keys(newDay)
 				.filter((key: any) => newDay[key as keyof Day] !== undefined)
-				.forEach((validKey : any) => originalVal.days[idx][validKey as keyof Day] = newDay[validKey as keyof Day] );
+				.forEach(
+					(validKey: any) =>
+						(originalVal.days[idx][validKey as keyof Day] =
+							newDay[validKey as keyof Day])
+				);
 
-			await weeksRef.set(originalVal);
+			await updateDoc(doc(db, "weeks/" + weekId), "days", [
+				...originalVal.days,
+			]);
 			return res.status(400).send(originalVal.days[idx]);
 		}
 		return res.status(400).send("A week with this ID does not excist yet");

@@ -1,3 +1,5 @@
+import { collection, deleteDoc, doc } from "firebase/firestore/lite";
+
 const { db } = require("../../util/firebase");
 
 const validateHelper = require("../../util/validateHelper");
@@ -14,9 +16,9 @@ const querySchema = j.object().keys({
 exports.removeWeek = async (req: any, res: any) => {
 	try {
     const { weekId } = validateHelper(querySchema, req.query);
-		const weeksRef = db.collection("weeks");
+		const weeksRef = collection(db, "weeks");
 
-		weeksRef.doc(weekId).delete()
+		await deleteDoc(doc(weeksRef, weekId))
 
 		return res.status(200).send(weekId + " was removed");
 	} catch (e: any) {

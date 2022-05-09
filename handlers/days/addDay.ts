@@ -1,7 +1,8 @@
+import { getDoc, doc, updateDoc } from "firebase/firestore/lite";
 import Day from "../../types/Day";
 import Week from "../../types/Week";
 
-const { db } = require('../../util/firebase')
+const { db } = require("../../util/firebase");
 
 export {};
 
@@ -21,7 +22,7 @@ const bodySchema = j
 				"thursday",
 				"friday",
 				"saturday",
-        "sunday"
+				"sunday"
 			),
 		capacity: j.number().required(),
 		note: j.string().optional(),
@@ -50,21 +51,26 @@ exports.addDay = async (req: any, res: any) => {
 			persons: [],
 		};
 
-    const weeksRef = db.doc('weeks/' + weekId);
+		const originalVal: Week = await getDoc(doc(db, "weeks/" + weekId)).then(
+			(snapshot: any) => snapshot.data()
+		);
 
-		const originalVal : Week = await weeksRef.get().then((snapshot: any) => snapshot.data());
+		if (originalVal && originalVal.days) {
+			let idx = originalVal.days.findIndex(
+				(day: Day) => day.name === newDay.name
+			);
+			if (idx !== -1)
+				return res.status(400).send("This day already excists for this week");
 
-    if(originalVal && originalVal.days){
-      let idx = originalVal.days.findIndex((day : Day) => day.name === newDay.name)
-      if(idx !== -1) return res.status(400).send("This day already excists for this week")
+			originalVal.days.push(newDay);
 
-      originalVal.days.push(newDay)
+			await updateDoc(doc(db, "weeks/" + weekId), "days", [
+				...originalVal.days,
+			]);
 
-      await weeksRef.set(originalVal)
-
-      return res.status(400).send(originalVal)
-    }
-    return res.status(400).send("A week with this ID does not excist yet")
+			return res.status(400).send(originalVal);
+		}
+		return res.status(400).send("A week with this ID does not excist yet");
 	} catch (e: any) {
 		return res.status(400).send(e.message);
 	}

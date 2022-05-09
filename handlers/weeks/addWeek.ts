@@ -1,5 +1,5 @@
 const { db } = require("../../util/firebase");
-import { collection, getDocs } from "firebase/firestore/lite";
+import { collection, getDocs, setDoc, doc } from "firebase/firestore/lite";
 
 export {};
 
@@ -17,7 +17,7 @@ exports.addWeek = async (req: any, res: any) => {
 
 		const newId = lastId ? `week-${parseInt(lastId) + 1}` : 1;
 
-		db.collection("weeks").doc(newId).set({ days: [] });
+		await setDoc(doc(db, "weeks/" + newId), { days: []} )
 
 		return res.status(200).send(newId + " was added");
 	} catch (e: any) {
