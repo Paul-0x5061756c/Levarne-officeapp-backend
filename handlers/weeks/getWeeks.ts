@@ -1,17 +1,17 @@
 import Week from "../../types/Week";
+import { collection, getDocs } from "firebase/firestore/lite";
 export {};
 
-const { db } = require("../../util/admin");
+const { db } = require("../../util/firebase");
 
 exports.getWeeks = async (req: any, res: any) => {
-	const weeksRef = db.collection("weeks");
+	const weeksRef = collection(db, "weeks");
 	try {
-		weeksRef.get().then((snapshot: any) => {
+		await getDocs(weeksRef).then((snapshot: any) => {
 			const weeks: Week[] = snapshot.docs.map((doc: any) => ({
 				id: doc.id,
 				...doc.data(),
 			}));
-			console.log(weeks);
 			return res.status(201).json(weeks);
 		});
 	} catch (error) {

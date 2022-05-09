@@ -1,4 +1,4 @@
-const { db } = require("../../util/admin");
+const { db } = require("../../util/firebase");
 
 const validateHelper = require("../../util/validateHelper");
 const j = require("joi");

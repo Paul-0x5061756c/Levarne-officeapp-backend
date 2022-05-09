@@ -1,6 +1,6 @@
 import Day from "../../types/Day";
 
-const { db } = require("../../util/admin");
+const { db } = require("../../util/firebase");
 
 export {};
 

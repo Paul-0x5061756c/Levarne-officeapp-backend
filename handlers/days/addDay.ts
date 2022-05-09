@@ -1,7 +1,7 @@
 import Day from "../../types/Day";
 import Week from "../../types/Week";
 
-const { db } = require('../../util/admin')
+const { db } = require('../../util/firebase')
 
 export {};
 

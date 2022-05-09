@@ -1,21 +1,23 @@
-const { db } = require("../../util/admin");
+const { db } = require("../../util/firebase");
+import { collection, getDocs } from "firebase/firestore/lite";
 
-export {}
+export {};
 
 exports.addWeek = async (req: any, res: any) => {
 	try {
-		const weeksRef = db.collection("weeks");
+		const weeksRef = collection(db, "weeks");
 
-		const weekIds: string[] = await weeksRef
-			.get()
-			.then((snapshot: any) => snapshot.docs.map((doc: any) => doc.id));
+		const weekIds: string[] = await getDocs(weeksRef).then((snapshot: any) =>
+			snapshot.docs.map((doc: any) => doc.id)
+		);
 
-		let lastId: string | undefined = weekIds[weekIds.length - 1].split("-").pop();
+		let lastId: string | undefined = weekIds[weekIds.length - 1]
+			.split("-")
+			.pop();
 
-		const newId = lastId ? `week-${ parseInt(lastId) + 1}` : 1;
+		const newId = lastId ? `week-${parseInt(lastId) + 1}` : 1;
 
-		weeksRef.doc(newId).set({ days: [] });
-
+		db.collection("weeks").doc(newId).set({ days: [] });
 
 		return res.status(200).send(newId + " was added");
 	} catch (e: any) {
