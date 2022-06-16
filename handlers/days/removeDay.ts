@@ -51,7 +51,7 @@ exports.removeDay = async (req: any, res: any) => {
 			await updateDoc(doc(db, "weeks/" + weekId), "days", [
 				...originalVal.days,
 			]);
-			return res.status(400).send(originalVal);
+			return res.status(200).send(originalVal);
 		}
 		return res.status(400).send("A week with this ID does not excist yet");
 	} catch (e: any) {

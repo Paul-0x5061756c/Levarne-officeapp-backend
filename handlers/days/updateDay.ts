@@ -36,6 +36,7 @@ const querySchema = j.object().keys({
 
 exports.updateDay = async (req: any, res: any) => {
 	try {
+		console.log(req.body)
 		// validate input
 		const { weekId } = validateHelper(querySchema, req.query);
 		const { name, capacity, note, available, persons } = validateHelper(
@@ -74,10 +75,11 @@ exports.updateDay = async (req: any, res: any) => {
 			await updateDoc(doc(db, "weeks/" + weekId), "days", [
 				...originalVal.days,
 			]);
-			return res.status(400).send(originalVal.days[idx]);
+			return res.status(200).send(originalVal.days[idx]);
 		}
 		return res.status(400).send("A week with this ID does not excist yet");
 	} catch (e: any) {
+		console.log(e)
 		return res.status(400).send(e.message);
 	}
 };

@@ -68,7 +68,7 @@ exports.addDay = async (req: any, res: any) => {
 				...originalVal.days,
 			]);
 
-			return res.status(400).send(originalVal);
+			return res.status(200).send(originalVal);
 		}
 		return res.status(400).send("A week with this ID does not excist yet");
 	} catch (e: any) {
